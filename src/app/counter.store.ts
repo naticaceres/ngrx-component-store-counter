@@ -17,7 +17,7 @@ export class CounterStore extends ComponentStore<CounterState> {
       .pipe(
         tap((i) => {
           this.updateClock();
-          console.log(i); 
+          console.log(i);
         })
       )
       .subscribe(noop);
@@ -38,6 +38,11 @@ export class CounterStore extends ComponentStore<CounterState> {
   }));
 
   readonly updateClock = this.effect<void>((trigger$) =>
-    trigger$.pipe(tap(() => this.incrementSecondsElapsed()))
+    trigger$.pipe(
+      tap(() => {
+        console.log('updateClock effect called');
+        this.incrementSecondsElapsed();
+      })
+    )
   );
 }
