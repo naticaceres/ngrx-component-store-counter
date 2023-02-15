@@ -34,7 +34,7 @@ export class CounterStore extends ComponentStore<CounterState> {
   }));
   readonly incrementSecondsElapsed = this.updater((state) => ({
     ...state,
-    secondsElapsed: state.secondsElapsed++,
+    secondsElapsed: state.secondsElapsed + 1,
   }));
 
   readonly updateClock = this.effect<void>((trigger$) =>
