@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { ComponentStore } from '@ngrx/component-store';
 import { interval, noop, Observable } from 'rxjs';
-import { tap } from 'rxjs/operators';
+import { tap, withLatestFrom } from 'rxjs/operators';
 
 export interface CounterState {
   count: number;
@@ -15,8 +15,9 @@ export class CounterStore extends ComponentStore<CounterState> {
 
     interval(1000)
       .pipe(
-        tap((i) => {
-          this.updateClock();
+        withLatestFrom(this.count$),
+        tap(([i, count]) => {
+          this.updateClock(count);
           console.log(i);
         })
       )
@@ -32,16 +33,16 @@ export class CounterStore extends ComponentStore<CounterState> {
     ...state,
     count: state.count + 1,
   }));
-  readonly incrementSecondsElapsed = this.updater((state) => ({
+  readonly incrementSecondsElapsed = this.updater((state, count) => ({
     ...state,
-    secondsElapsed: state.secondsElapsed + 1,
+    secondsElapsed: state.secondsElapsed + 1 + count,
   }));
 
-  readonly updateClock = this.effect<void>((trigger$) =>
-    trigger$.pipe(
-      tap(() => {
+  readonly updateClock = this.effect((count$: Observable<number>) =>
+    count$.pipe(
+      tap((count) => {
         console.log('updateClock effect called');
-        this.incrementSecondsElapsed();
+        this.incrementSecondsElapsed(count);
       })
     )
   );
